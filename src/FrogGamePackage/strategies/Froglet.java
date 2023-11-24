@@ -27,20 +27,24 @@ public class Froglet implements LeapFrogGameInterface {
         return isWithinBounds(column, row) && isEmptySpace(column, row);
     }
 
-    private boolean isWithinBounds(int column, int row) {
+    @Override
+    public boolean isWithinBounds(int column, int row) {
         return column >= 0 && column <= 5 && row >= 0 && row <= 5;
     }
 
-    private boolean isEmptySpace(int column, int row) {
+    @Override
+    public boolean isEmptySpace(int column, int row) {
         return Objects.equals(this.boardGame[row][column], " ");
     }
 
-    private boolean isAdjacent(int columnStart, int rowStart, int columnEnd, int rowEnd) {
+    @Override
+    public boolean isAdjacent(int columnStart, int rowStart, int columnEnd, int rowEnd) {
         return (Math.abs(columnStart - columnEnd) == 1 && Math.abs(rowStart - rowEnd) == 0) ||
                 (Math.abs(columnStart - columnEnd) == 0 && Math.abs(rowStart - rowEnd) == 1);
     }
 
-    private boolean hasPieceBetween(int columnStart, int rowStart, int columnEnd, int rowEnd) {
+    @Override
+    public boolean hasPieceBetween(int columnStart, int rowStart, int columnEnd, int rowEnd) {
         if (columnStart == columnEnd) {
             // Moving up or down
             int rowBetween = (rowStart + rowEnd) / 2;
@@ -52,7 +56,8 @@ public class Froglet implements LeapFrogGameInterface {
         }
     }
 
-    public boolean isGameOver() {
+    @Override
+    public boolean gameIsOver() {
         for (int row = 0; row < this.size; row++) {
             for (int col = 0; col < this.size; col++) {
                 if (!isEmptySpace(col, row)) {
@@ -176,7 +181,7 @@ public class Froglet implements LeapFrogGameInterface {
             }
             this.displayScore();
             this.displayBoardGame(this.boardGame);
-            gameOver = !this.isGameOver();
+            gameOver = !this.gameIsOver();
         }
     }
 }

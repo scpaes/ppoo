@@ -17,4 +17,13 @@ public interface LeapFrogGameInterface {
 
     void displayScore();
 
+    boolean isWithinBounds(int column, int row);
+
+    boolean isEmptySpace(int column, int row);
+
+    boolean isAdjacent(int columnStart, int rowStart, int columnEnd, int rowEnd);
+
+    boolean hasPieceBetween(int columnStart, int rowStart, int columnEnd, int rowEnd);
+
+    boolean gameIsOver();
 }

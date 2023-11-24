@@ -3,14 +3,14 @@ package FrogGamePackage.context;
 import FrogGamePackage.strategies.LeapFrogGameInterface;
 
 public class LeapFrogGame {
-    private LeapFrogGameInterface leapFrogGame;
+    private LeapFrogGameInterface leapFrogGameMode;
 
     public LeapFrogGame(LeapFrogGameInterface leapFrogGame) {
-        this.leapFrogGame = leapFrogGame;
+        this.leapFrogGameMode = leapFrogGame;
     }
 
     public void play() {
-        leapFrogGame.play();
+        leapFrogGameMode.play();
     }
 
 }
