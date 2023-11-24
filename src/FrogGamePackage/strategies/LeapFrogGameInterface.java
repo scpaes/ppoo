@@ -3,7 +3,7 @@ package FrogGamePackage.strategies;
 public interface LeapFrogGameInterface {
     void play();
 
-    void setMove(int columnStart, int rowStart, int columnEnd, int rowEnd);
+    boolean setMove(int columnStart, int rowStart, int columnEnd, int rowEnd);
 
     boolean isValidStartingPosition(int column, int row);
 

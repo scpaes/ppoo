@@ -3,9 +3,11 @@ package FrogGamePackage.strategies;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.Random;
+import java.util.Scanner;
 
 public class Froglet implements LeapFrogGameInterface {
     String[][] boardGame;
+    int size = 6;
     int scorePlayer1;
     int scorePlayer2;
 
@@ -33,26 +35,71 @@ public class Froglet implements LeapFrogGameInterface {
         return Objects.equals(this.boardGame[row][column], " ");
     }
 
+    private boolean isAdjacent(int columnStart, int rowStart, int columnEnd, int rowEnd) {
+        return (Math.abs(columnStart - columnEnd) == 1 && Math.abs(rowStart - rowEnd) == 0) ||
+                (Math.abs(columnStart - columnEnd) == 0 && Math.abs(rowStart - rowEnd) == 1);
+    }
+
+    private boolean hasPieceBetween(int columnStart, int rowStart, int columnEnd, int rowEnd) {
+        if (columnStart == columnEnd) {
+            // Moving up or down
+            int rowBetween = (rowStart + rowEnd) / 2;
+            return !isEmptySpace(columnStart, rowBetween);
+        } else {
+            // Moving left or right
+            int columnBetween = (columnStart + columnEnd) / 2;
+            return !isEmptySpace(columnBetween, rowStart);
+        }
+    }
+
+    public boolean isGameOver() {
+        for (int row = 0; row < this.size; row++) {
+            for (int col = 0; col < this.size; col++) {
+                if (!isEmptySpace(col, row)) {
+                    // Check all four directions
+                    if ((isWithinBounds(col, row - 1) && isEmptySpace(col, row - 1) && isValidMove(col, row, col, row - 1)) ||
+                            (isWithinBounds(col, row + 1) && isEmptySpace(col, row + 1) && isValidMove(col, row, col, row + 1)) ||
+                            (isWithinBounds(col - 1, row) && isEmptySpace(col - 1, row) && isValidMove(col, row, col - 1, row)) ||
+                            (isWithinBounds(col + 1, row) && isEmptySpace(col + 1, row) && isValidMove(col, row, col + 1, row))) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+
     @Override
     public boolean isValidMove(int columnStart, int rowStart, int columnEnd, int rowEnd) {
-        return !(isValidStartingPosition(columnStart, rowStart) && isValidEndingPosition(columnEnd, rowEnd));
+        if (!isValidStartingPosition(columnStart, rowStart) ||
+                !isValidEndingPosition(columnEnd, rowEnd) ||
+                isAdjacent(columnStart, rowStart, columnEnd, rowEnd) ||
+                !hasPieceBetween(columnStart, rowStart, columnEnd, rowEnd)) {
+            return false;
+        }
+        return true;
     }
 
     @Override
-    public void setMove(int columnStart, int rowStart, int columnEnd, int rowEnd) {
-        if (isValidStartingPosition(columnStart, rowStart) && isValidEndingPosition(columnEnd, rowEnd)) {
+    public boolean setMove(int columnStart, int rowStart, int columnEnd, int rowEnd) {
+        if (isValidMove(columnStart, rowStart, columnEnd, rowEnd)) {
             this.boardGame[rowStart][columnStart] = " ";
             this.boardGame[rowEnd][columnEnd] = "#";
-            this.scorePlayer1++;
-        } else if (isValidStartingPosition(columnEnd, rowEnd) && isValidEndingPosition(columnStart, rowStart)) {
-            this.boardGame[rowEnd][columnEnd] = " ";
-            this.boardGame[rowStart][columnStart] = "#";
-            this.scorePlayer2++;
+            if (columnStart == columnEnd) {
+                // Moving up or down
+                int rowBetween = (rowStart + rowEnd) / 2;
+                this.boardGame[rowBetween][columnStart] = " ";
+            } else {
+                // Moving left or right
+                int columnBetween = (columnStart + columnEnd) / 2;
+                this.boardGame[rowStart][columnBetween] = " ";
+            }
+            return true;
         } else {
-            System.out.println("Invalid move");
+            System.out.println("Invalid move!");
         }
-
-
+        return false;
     }
 
     @Override
@@ -92,6 +139,44 @@ public class Froglet implements LeapFrogGameInterface {
         this.boardGame = new String[6][6];
         this.fillBoardGame(this.boardGame);
         this.displayBoardGame(this.boardGame);
+        boolean gameOver = false;
+        Scanner scanner = new Scanner(System.in);
+        int rowStart;
+        int columnStart;
+        int rowEnd;
+        int columnEnd;
+        boolean scorePoint;
+        while (!gameOver) {
+            System.out.println("Player 1, enter your move (row column): ");
+            rowStart = scanner.nextInt();
+            columnStart = scanner.nextInt();
 
+            System.out.println("Player 1, enter your move (row column): ");
+            rowEnd = scanner.nextInt();
+            columnEnd = scanner.nextInt();
+
+            scorePoint = this.setMove(columnStart, rowStart, columnEnd, rowEnd);
+            if (scorePoint) {
+                this.scorePlayer1++;
+            }
+            this.displayScore();
+            this.displayBoardGame(this.boardGame);
+
+            System.out.println("Player 2, enter your move (row column): ");
+            rowStart = scanner.nextInt();
+            columnStart = scanner.nextInt();
+
+            System.out.println("Player 2, enter your move (row column): ");
+            rowEnd = scanner.nextInt();
+            columnEnd = scanner.nextInt();
+
+            scorePoint = this.setMove(columnStart, rowStart, columnEnd, rowEnd);
+            if (scorePoint) {
+                this.scorePlayer2++;
+            }
+            this.displayScore();
+            this.displayBoardGame(this.boardGame);
+            gameOver = !this.isGameOver();
+        }
     }
 }
