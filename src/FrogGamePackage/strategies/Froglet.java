@@ -1,15 +1,16 @@
 package FrogGamePackage.strategies;
 
-import java.util.Arrays;
-import java.util.Objects;
-import java.util.Random;
-import java.util.Scanner;
+import java.util.*;
 
 public class Froglet implements LeapFrogGameInterface {
     String[][] boardGame;
+    String[] gamePieces = {"BLUE", "RED", "GREEN", "ORANGE"};
+
     int size = 6;
     int scorePlayer1;
     int scorePlayer2;
+
+    String pieceTakeColor;
 
     @Override
     public void displayScore() {
@@ -94,11 +95,13 @@ public class Froglet implements LeapFrogGameInterface {
             if (columnStart == columnEnd) {
                 // Moving up or down
                 int rowBetween = (rowStart + rowEnd) / 2;
-                this.boardGame[rowBetween][columnStart] = " ";
+                this.pieceTakeColor = this.boardGame[rowBetween][columnStart];
+                this.boardGame[rowBetween][columnStart] = "        ";
             } else {
                 // Moving left or right
                 int columnBetween = (columnStart + columnEnd) / 2;
-                this.boardGame[rowStart][columnBetween] = " ";
+                this.pieceTakeColor = this.boardGame[rowStart][columnBetween];
+                this.boardGame[rowStart][columnBetween] = "        ";
             }
             return true;
         } else {
@@ -128,15 +131,30 @@ public class Froglet implements LeapFrogGameInterface {
 
     @Override
     public void fillBoardGame(String[][] array) {
-        // Fill the array with # characters
-        for (String[] strings : array) {
-            Arrays.fill(strings, "#");
+        String[] colors = new String[36];
+        // BLUE
+        Arrays.fill(colors, 0, 14, "\u001B[34mBlue     \u001B[0m");
+        Arrays.fill(colors, 14, 24, "\u001B[31mRed     \u001B[0m");
+        Arrays.fill(colors, 24, 31, "\u001B[32mGreen   \u001B[0m");
+        Arrays.fill(colors, 31, 36, "\u001B[33mOrange  \u001B[0m");
+
+        // Shuffle the array
+        List<String> colorsList = Arrays.asList(colors);
+        Collections.shuffle(colorsList);
+        colorsList.toArray(colors);
+
+        // Fill the array with colors characters
+        int index = 0;
+        for (int i = 0; i < this.size; i++) {
+            for (int j = 0; j < this.size; j++) {
+                this.boardGame[i][j] = colors[index++];
+            }
         }
         // remove randomly one character from the array
         Random rand = new Random();
         int row = rand.nextInt(6);
         int col = rand.nextInt(6);
-        array[row][col] = " ";
+        this.boardGame[row][col] = "        ";
     }
 
     @Override
@@ -162,7 +180,18 @@ public class Froglet implements LeapFrogGameInterface {
 
             scorePoint = this.setMove(columnStart, rowStart, columnEnd, rowEnd);
             if (scorePoint) {
-                this.scorePlayer1++;
+                if (this.pieceTakeColor.equals("Blue")) {
+                    this.scorePlayer1 += 1;
+                }
+                if (this.pieceTakeColor.equals("Red")) {
+                    this.scorePlayer1 += 2;
+                }
+                if (this.pieceTakeColor.equals("Green")) {
+                    this.scorePlayer1 += 3;
+                }
+                if (this.pieceTakeColor.equals("Orange")) {
+                    this.scorePlayer1 += 4;
+                }
             }
             this.displayScore();
             this.displayBoardGame(this.boardGame);
@@ -177,7 +206,18 @@ public class Froglet implements LeapFrogGameInterface {
 
             scorePoint = this.setMove(columnStart, rowStart, columnEnd, rowEnd);
             if (scorePoint) {
-                this.scorePlayer2++;
+                if (this.pieceTakeColor.equals("Blue")) {
+                    this.scorePlayer2 += 1;
+                }
+                if (this.pieceTakeColor.equals("Red")) {
+                    this.scorePlayer2 += 2;
+                }
+                if (this.pieceTakeColor.equals("Green")) {
+                    this.scorePlayer2 += 3;
+                }
+                if (this.pieceTakeColor.equals("Orange")) {
+                    this.scorePlayer2 += 4;
+                }
             }
             this.displayScore();
             this.displayBoardGame(this.boardGame);
